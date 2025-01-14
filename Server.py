@@ -6,11 +6,7 @@ import packetBuilder
 import packetParser
 from Exceptions import *
 from ANSI import ANSI
-
-MAGIC_COOKIE = 0xabcddcba
-OFFER_TYPE = 0x2
-REQUEST_TYPE = 0x3
-PAYLOAD_TYPE = 0x4
+from constants import *
 BROADCAST_PORT = 13117
 OFFER_INTERVAL = 1.0
 UDP_CHUNK_SIZE = 1400

@@ -4,11 +4,7 @@ import time
 import packetParser
 from Exceptions import *
 from ANSI import ANSI
-
-MAGIC_COOKIE = 0xabcddcba
-OFFER_TYPE = 0x2
-REQUEST_TYPE = 0x3
-PAYLOAD_TYPE = 0x4
+from constants import *
 
 BROADCAST_PORT = 13117
 UDP_BUFFER_SIZE = 65535
