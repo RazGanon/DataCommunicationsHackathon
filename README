@@ -1,0 +1,59 @@
+This project implements a framework to test TCP and UDP communication between a server and client. It measures performance by simulating file transfers and calculating metrics such as transfer speed and packet loss.
+
+## Features
+- **Server:**
+  - Listens for client requests on dynamically assigned TCP and UDP ports.
+  - Broadcasts offer messages to clients via UDP.
+  - Handles client requests to send data over TCP and UDP.
+- **Client:**
+  - Discovers servers via UDP offer messages.
+  - Requests data transfer over TCP and/or UDP.
+  - Measures transfer speed, packet loss, and provides detailed statistics.
+
+## Architecture
+The project consists of several components, each with a specific role:
+
+1. **Server (`Server.py`):**
+   - Periodically broadcasts UDP offer messages containing server information.
+   - Handles TCP connections to send data based on client-specified file size.
+   - Responds to UDP requests by sending data segments and tracks progress.
+
+2. **Client (`Client.py`):**
+   - Listens for server broadcasts and validates received messages.
+   - Initiates TCP and UDP connections to request data from the server.
+   - Collects metrics, such as transfer speed and success rate.
+
+3. **Packet Handling:**
+   - **`PacketBuilder.py`:** Constructs protocol-compliant packets for server-client communication.
+   - **`PacketParser.py`:** Parses received packets, validates their format, and extracts data.
+
+4. **Custom Exceptions (`Exceptions.py`):**
+   - Provides specialized exceptions for error handling, such as invalid packet formats or unexpected message types.
+
+5. **Main Application (`main.py`):**
+   - Coordinates the server and client operations.
+   - Collects and summarizes performance statistics after each test.
+
+## Protocol Details
+Custom protocol is used for communication:
+- **Magic Cookie:** Ensures message validity.
+- **Message Types:**
+  - `OFFER`: Server broadcasts its availability and ports.
+  - `REQUEST`: Client requests a file transfer.
+  - `PAYLOAD`: Server sends file data in segments.
+
+## How to Run
+1. **Start the Server:**
+   - Run `main.py` to start the server. It will broadcast offers and listen for client connections on dynamic ports.
+2. **Run the Client:**
+   - Execute `main.py` on the client machine to listen for server offers and initiate tests.
+
+## Statistics
+The client collects and prints statistics after each test:
+- **TCP:** Total bytes transferred, time taken, and transfer speed.
+- **UDP:** Packet loss percentage, transfer speed, and success rate.
+
+## Key Decisions
+- **Threading:** Separate threads for TCP, UDP, and broadcast operations to handle multiple connections concurrently.
+- **Custom Protocol:** A lightweight protocol ensures compatibility and efficiency for the specific use case.
+- **Error Handling:** Robust exception classes handle parsing and protocol-related errors gracefully.
