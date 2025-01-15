@@ -1,59 +1,80 @@
 This project implements a framework to test TCP and UDP communication between a server and client. It measures performance by simulating file transfers and calculating metrics such as transfer speed and packet loss.
 
-## Features
-- **Server:**
-  - Listens for client requests on dynamically assigned TCP and UDP ports.
-  - Broadcasts offer messages to clients via UDP.
-  - Handles client requests to send data over TCP and UDP.
-- **Client:**
-  - Discovers servers via UDP offer messages.
-  - Requests data transfer over TCP and/or UDP.
-  - Measures transfer speed, packet loss, and provides detailed statistics.
-
-## Architecture
+Features:
+Server:
+  Listens for client requests on dynamically assigned TCP and UDP ports.
+  Broadcasts offer messages to clients via UDP.
+  Handles client requests to send data over TCP and UDP.
+Client:
+  Discovers servers via UDP offer messages.
+  Requests data transfer over TCP and/or UDP.
+  Measures transfer speed, packet loss, and provides detailed statistics.
+  Architecture
 The project consists of several components, each with a specific role:
 
-1. **Server (`Server.py`):**
-   - Periodically broadcasts UDP offer messages containing server information.
-   - Handles TCP connections to send data based on client-specified file size.
-   - Responds to UDP requests by sending data segments and tracks progress.
+Server (Server.py):
 
-2. **Client (`Client.py`):**
-   - Listens for server broadcasts and validates received messages.
-   - Initiates TCP and UDP connections to request data from the server.
-   - Collects metrics, such as transfer speed and success rate.
+  Periodically broadcasts UDP offer messages containing server information.
+  Handles TCP connections to send data based on client-specified file size.
+  Responds to UDP requests by sending data segments and tracks progress.
+Client (Client.py):
 
-3. **Packet Handling:**
-   - **`PacketBuilder.py`:** Constructs protocol-compliant packets for server-client communication.
-   - **`PacketParser.py`:** Parses received packets, validates their format, and extracts data.
+  Listens for server broadcasts and validates received messages.
+  Initiates TCP and UDP connections to request data from the server.
+  Collects metrics, such as transfer speed and success rate.
+Packet Handling:
 
-4. **Custom Exceptions (`Exceptions.py`):**
-   - Provides specialized exceptions for error handling, such as invalid packet formats or unexpected message types.
+  PacketBuilder.py: Constructs protocol-compliant packets for server-client communication.
+  PacketParser.py: Parses received packets, validates their format, and extracts data.
+Custom Exceptions (Exceptions.py):
 
-5. **Main Application (`main.py`):**
-   - Coordinates the server and client operations.
-   - Collects and summarizes performance statistics after each test.
+  Provides specialized exceptions for error handling, such as invalid packet formats or unexpected message types.
+Main Application (main.py):
 
-## Protocol Details
-Custom protocol is used for communication:
-- **Magic Cookie:** Ensures message validity.
-- **Message Types:**
-  - `OFFER`: Server broadcasts its availability and ports.
-  - `REQUEST`: Client requests a file transfer.
-  - `PAYLOAD`: Server sends file data in segments.
+  Coordinates the server and client operations.
+  Collects and summarizes performance statistics after each test.
+  Protocol Details
+A custom protocol is used for communication:
+  
+  Magic Cookie: Ensures message validity.
+  Message Types:
+  OFFER: Server broadcasts its availability and ports.
+  REQUEST: Client requests a file transfer.
+  PAYLOAD: Server sends file data in segments.
+How to Run
+1. Single Computer Test
+  Start the Server:
+  Run main.py on the same computer where you want to simulate the server. It will broadcast offers and listen for client connections on dynamic ports.
+  Run the Client:
+  Execute main.py again on the same computer to simulate the client discovering the server and initiating file transfer tests.
+2. Multi-Computer Test
+  To test across different machines:
+  Server Machine:
+  Run main.py as the server on one computer.
+  The server will broadcast UDP offers containing its IP address and port information.
+  Client Machine:
+  Run main.py as the client on another computer connected to the same network.
+  The client will detect the server's broadcast and initiate tests.
+Setting the Broadcast IP:
+    The broadcast IP depends on your local network's configuration. To calculate it:
+    Take your computer's IPv4 address (e.g., 10.0.0.15) and subnet mask (e.g., 255.255.255.0).
+    Calculate the broadcast address by setting all host bits in the subnet to 1.
 
-## How to Run
-1. **Start the Server:**
-   - Run `main.py` to start the server. It will broadcast offers and listen for client connections on dynamic ports.
-2. **Run the Client:**
-   - Execute `main.py` on the client machine to listen for server offers and initiate tests.
+Example:
+  IPv4 Address: 10.0.0.15
+  Subnet Mask: 255.255.255.0
+  Broadcast Address: 10.0.0.255
+  Update the broadcast IP in the server code:
+  broadcaster.sendto(offer_message, ('10.0.0.255', BROADCAST_PORT))
+Statistics:
+  The client collects and prints statistics after each test:
 
-## Statistics
-The client collects and prints statistics after each test:
-- **TCP:** Total bytes transferred, time taken, and transfer speed.
-- **UDP:** Packet loss percentage, transfer speed, and success rate.
-
-## Key Decisions
-- **Threading:** Separate threads for TCP, UDP, and broadcast operations to handle multiple connections concurrently.
-- **Custom Protocol:** A lightweight protocol ensures compatibility and efficiency for the specific use case.
-- **Error Handling:** Robust exception classes handle parsing and protocol-related errors gracefully.
+TCP: Total bytes transferred, time taken, and transfer speed.
+UDP: Packet loss percentage, transfer speed, and success rate.
+Key Decisions
+  Threading: Separate threads for TCP, UDP, and broadcast operations to handle multiple connections concurrently.
+  Custom Protocol: A lightweight protocol ensures compatibility and efficiency for the specific use case.
+  Error Handling: Robust exception classes handle parsing and protocol-related errors gracefully.
+Notes:
+  Ensure the server and client machines are connected to the same network to detect broadcasts.
+  If broadcast detection fails, verify that the correct broadcast IP is being used and that UDP traffic is allowed by the firewall or router.
